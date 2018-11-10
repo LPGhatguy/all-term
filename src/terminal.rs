@@ -27,7 +27,7 @@ fn choose_backend() -> Box<TerminalBackend> {
     Box::new(AnsiTerminal)
 }
 
-/// Provide's access to the application's terminal.
+/// Provides access to the application's terminal.
 pub fn terminal() -> Arc<Mutex<Terminal>> {
     lazy_static! {
         static ref TERMINAL: Mutex<Weak<Mutex<Terminal>>> = Mutex::new(Weak::new());
