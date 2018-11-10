@@ -1,4 +1,4 @@
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, Weak};
 
 use lazy_static::lazy_static;
 
@@ -29,40 +29,63 @@ fn choose_backend() -> Box<TerminalBackend> {
 /// Provide's access to the application's terminal.
 pub fn terminal() -> Arc<Mutex<Terminal>> {
     lazy_static! {
-        static ref TERMINAL: Arc<Mutex<Terminal>> = {
-            let backend = choose_backend();
-            let terminal = Terminal::with_backend(backend);
-            Arc::new(Mutex::new(terminal))
-        };
+        static ref TERMINAL: Mutex<Weak<Mutex<Terminal>>> = Mutex::new(Weak::new());
     }
 
-    Arc::clone(&TERMINAL)
+    let mut maybe_terminal = TERMINAL.lock().unwrap();
+
+    if let Some(terminal) = maybe_terminal.upgrade() {
+        terminal
+    } else {
+        let backend = choose_backend();
+        let terminal = Arc::new(Mutex::new(Terminal::with_backend(backend)));
+
+        *maybe_terminal = Arc::downgrade(&terminal);
+
+        terminal
+    }
 }
 
 pub struct Terminal {
     backend: Box<TerminalBackend>,
-    is_in_raw_mode: bool,
+    raw_mode_enabled: bool,
+    alternate_screen_enabled: bool,
 }
 
 impl Terminal {
     fn with_backend(backend: Box<TerminalBackend>) -> Terminal {
         Terminal {
             backend,
-            is_in_raw_mode: false,
+            raw_mode_enabled: false,
+            alternate_screen_enabled: false,
         }
     }
 
     pub fn enable_raw_mode(&mut self) {
-        if !self.is_in_raw_mode {
+        if !self.raw_mode_enabled {
             self.backend.enable_raw_mode();
-            self.is_in_raw_mode = true;
+            self.raw_mode_enabled = true;
         }
     }
 
     pub fn disable_raw_mode(&mut self) {
-        if self.is_in_raw_mode {
+        if self.raw_mode_enabled {
             self.backend.disable_raw_mode();
-            self.is_in_raw_mode = false;
+            self.raw_mode_enabled = false;
+        }
+    }
+
+    pub fn enable_alternate_screen(&mut self) {
+        if !self.alternate_screen_enabled {
+            self.backend.enable_alternate_screen();
+            self.alternate_screen_enabled = true;
+        }
+    }
+
+    pub fn disable_alternate_screen(&mut self) {
+        if self.alternate_screen_enabled {
+            self.backend.disable_alternate_screen();
+            self.alternate_screen_enabled = false;
         }
     }
 }
@@ -70,5 +93,6 @@ impl Terminal {
 impl Drop for Terminal {
     fn drop(&mut self) {
         self.disable_raw_mode();
+        self.disable_alternate_screen();
     }
 }

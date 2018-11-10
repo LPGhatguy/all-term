@@ -13,4 +13,12 @@ impl TerminalBackend for WindowsTerminal {
     fn disable_raw_mode(&mut self) {
         disable_raw_mode();
     }
+
+    fn enable_alternate_screen(&mut self) {
+        unimplemented!()
+    }
+
+    fn disable_alternate_screen(&mut self) {
+        unimplemented!()
+    }
 }
