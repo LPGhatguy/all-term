@@ -6,4 +6,5 @@ pub trait TerminalBackend: Send {
     fn clear_screen(&mut self);
     fn hide_cursor(&mut self);
     fn show_cursor(&mut self);
+    fn move_cursor(&mut self, x: usize, y: usize);
 }

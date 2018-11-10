@@ -100,6 +100,10 @@ impl Terminal {
     pub fn hide_cursor(&mut self) {
         self.backend.hide_cursor();
     }
+
+    pub fn move_cursor(&mut self, x: usize, y: usize) {
+        self.backend.move_cursor(x, y);
+    }
 }
 
 impl Drop for Terminal {

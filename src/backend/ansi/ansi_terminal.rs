@@ -67,4 +67,14 @@ impl TerminalBackend for AnsiTerminal {
         handle.write(b"[?25l").unwrap();
         handle.flush().unwrap();
     }
+
+    fn move_cursor(&mut self, x: usize, y: usize) {
+        // ESC [ <y> ; <x> H
+        let stdout = io::stdout();
+        let mut handle = stdout.lock();
+
+        handle.write(&[ESC]).unwrap();
+        handle.write(format!("[{};{}H", x, y).as_bytes()).unwrap();
+        handle.flush().unwrap();
+    }
 }

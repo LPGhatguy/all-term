@@ -33,4 +33,8 @@ impl TerminalBackend for WindowsTerminal {
     fn show_cursor(&mut self) {
         unimplemented!()
     }
+
+    fn move_cursor(&mut self, _x: usize, _y: usize) {
+        unimplemented!()
+    }
 }
