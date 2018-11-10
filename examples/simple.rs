@@ -1,4 +1,4 @@
-extern crate allterm;
+extern crate all_term;
 
 fn main() {
 }
