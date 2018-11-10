@@ -1,6 +1,7 @@
 use std::io::{self, Write};
 
 use crate::{
+    style::Style,
     terminal_backend::TerminalBackend,
     os::current::{enable_raw_mode, disable_raw_mode},
 };
@@ -74,7 +75,37 @@ impl TerminalBackend for AnsiTerminal {
         let mut handle = stdout.lock();
 
         handle.write(&[ESC]).unwrap();
-        handle.write(format!("[{};{}H", x, y).as_bytes()).unwrap();
+        write!(&mut handle, "[{};{}H", x, y).unwrap();
+        handle.flush().unwrap();
+    }
+
+    #[allow(unused_assignments)]
+    fn print(&mut self, text: &str, style: Style) {
+        // ESC [ <n> m
+        let stdout = io::stdout();
+        let mut handle = stdout.lock();
+
+        handle.write(&[ESC, b'[']).unwrap();
+
+        let mut semi = false;
+        if let Some(foreground) = style.foreground {
+            write!(&mut handle, "{}", foreground.to_ansi_foreground()).unwrap();
+            semi = true;
+        }
+
+        if let Some(background) = style.background {
+            if semi {
+                write!(&mut handle, ";").unwrap();
+                semi = false;
+            }
+            write!(&mut handle, "{}", background.to_ansi_background()).unwrap();
+        }
+
+        write!(&mut handle, "m").unwrap();
+        write!(&mut handle, "{}", text).unwrap();
+
+        handle.write(&[ESC, b'[', b'0', b'm']).unwrap();
+
         handle.flush().unwrap();
     }
 }

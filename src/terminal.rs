@@ -3,8 +3,9 @@ use std::sync::{Arc, Mutex, Weak};
 use lazy_static::lazy_static;
 
 use crate::{
-    terminal_backend::TerminalBackend,
+    style::Style,
     backend::ansi::AnsiTerminal,
+    terminal_backend::TerminalBackend,
 };
 
 #[cfg(windows)]
@@ -103,6 +104,10 @@ impl Terminal {
 
     pub fn move_cursor(&mut self, x: usize, y: usize) {
         self.backend.move_cursor(x, y);
+    }
+
+    pub fn print(&mut self, text: &str, style: Style) {
+        self.backend.print(text, style);
     }
 }
 

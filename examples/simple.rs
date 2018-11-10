@@ -1,5 +1,7 @@
 extern crate all_term;
 
+use all_term::{Style, Color};
+
 use std::{thread, time::Duration};
 
 fn main() {
@@ -11,7 +13,7 @@ fn main() {
 
     for i in 0..20 {
         handle.move_cursor(i, i);
-        println!("ahhhh");
+        handle.print("ahhh", Style::new().fg(Color::Red).bg(Color::Blue));
         thread::sleep(Duration::from_millis(100));
         handle.clear_screen();
     }

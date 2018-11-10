@@ -1,4 +1,5 @@
 use crate::{
+    style::Style,
     terminal_backend::TerminalBackend,
     os::windows::{enable_raw_mode, disable_raw_mode},
 };
@@ -35,6 +36,10 @@ impl TerminalBackend for WindowsTerminal {
     }
 
     fn move_cursor(&mut self, _x: usize, _y: usize) {
+        unimplemented!()
+    }
+
+    fn print(&mut self, _text: &str, _style: Style) {
         unimplemented!()
     }
 }
