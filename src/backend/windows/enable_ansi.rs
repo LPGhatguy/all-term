@@ -23,20 +23,19 @@ pub fn enable_ansi_mode() -> bool {
             return false;
         }
 
-        let mut console_mode: u32 = 0;
+        let mut console_mode = 0;
         GetConsoleMode(std_out_handle, &mut console_mode);
         let error_code = GetLastError();
         if error_code != 0 {
             return false;
         }
 
-        // Is ANSI mode already enabled?
-        if console_mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING == 0 {
-            SetConsoleMode(std_out_handle, console_mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
-            let error_code = GetLastError();
-            if error_code != 0 {
-                return false;
-            }
+        let new_mode = console_mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+
+        SetConsoleMode(std_out_handle, new_mode);
+        let error_code = GetLastError();
+        if error_code != 0 {
+            return false;
         }
     }
 

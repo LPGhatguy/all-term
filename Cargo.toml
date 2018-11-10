@@ -6,6 +6,9 @@ authors = ["Lucien Greathouse <me@lpghatguy.com>"]
 [dependencies]
 lazy_static = "1.2"
 
+[target.'cfg(target_os="unix")'.dependencies]
+libc = "0.2"
+
 [target.'cfg(target_os="windows")'.dependencies.winapi]
-version = "0.3.4"
-features = ["errhandlingapi", "consoleapi", "processenv"]
+version = "0.3"
+features = ["errhandlingapi", "consoleapi", "processenv", "winbase"]

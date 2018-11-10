@@ -7,18 +7,6 @@ use crate::{
     backend::ansi::AnsiTerminal,
 };
 
-pub struct Terminal {
-    backend: Box<TerminalBackend>,
-}
-
-impl Terminal {
-    fn with_backend(backend: Box<TerminalBackend>) -> Terminal {
-        Terminal {
-            backend,
-        }
-    }
-}
-
 #[cfg(windows)]
 fn choose_backend() -> Box<TerminalBackend> {
     use crate::backend::windows::{
@@ -49,4 +37,24 @@ pub fn terminal() -> Arc<Mutex<Terminal>> {
     }
 
     Arc::clone(&TERMINAL)
+}
+
+pub struct Terminal {
+    backend: Box<TerminalBackend>,
+}
+
+impl Terminal {
+    fn with_backend(backend: Box<TerminalBackend>) -> Terminal {
+        Terminal {
+            backend,
+        }
+    }
+
+    pub fn enable_raw_mode(&mut self) {
+        self.backend.enable_raw_mode();
+    }
+
+    pub fn disable_raw_mode(&mut self) {
+        self.backend.disable_raw_mode();
+    }
 }
