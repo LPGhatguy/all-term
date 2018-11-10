@@ -88,6 +88,18 @@ impl Terminal {
             self.alternate_screen_enabled = false;
         }
     }
+
+    pub fn clear_screen(&mut self) {
+        self.backend.clear_screen();
+    }
+
+    pub fn show_cursor(&mut self) {
+        self.backend.show_cursor();
+    }
+
+    pub fn hide_cursor(&mut self) {
+        self.backend.hide_cursor();
+    }
 }
 
 impl Drop for Terminal {

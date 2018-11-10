@@ -7,6 +7,12 @@ fn main() {
     let mut handle = terminal.lock().unwrap();
 
     handle.enable_alternate_screen();
+    handle.hide_cursor();
 
-    thread::sleep(Duration::from_secs(1));
+    for i in 0..10 {
+        println!("ahhhh");
+        thread::sleep(Duration::from_millis(100));
+        handle.clear_screen();
+        thread::sleep(Duration::from_millis(100));
+    }
 }
