@@ -14,7 +14,11 @@ fn main() {
     for i in 0..20 {
         handle.move_cursor(i, i);
         handle.print("ahhh", Style::new().fg(Color::Red).bg(Color::Blue));
-        thread::sleep(Duration::from_millis(100));
+
+        handle.move_cursor(i + 2, i + 3);
+        handle.print("ahhh", Style::new().fg(Color::Black).bg(Color::White));
+
+        thread::sleep(Duration::from_millis(40));
         handle.clear_screen();
     }
 }
