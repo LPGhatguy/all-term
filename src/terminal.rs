@@ -41,20 +41,34 @@ pub fn terminal() -> Arc<Mutex<Terminal>> {
 
 pub struct Terminal {
     backend: Box<TerminalBackend>,
+    is_in_raw_mode: bool,
 }
 
 impl Terminal {
     fn with_backend(backend: Box<TerminalBackend>) -> Terminal {
         Terminal {
             backend,
+            is_in_raw_mode: false,
         }
     }
 
     pub fn enable_raw_mode(&mut self) {
-        self.backend.enable_raw_mode();
+        if !self.is_in_raw_mode {
+            self.backend.enable_raw_mode();
+            self.is_in_raw_mode = true;
+        }
     }
 
     pub fn disable_raw_mode(&mut self) {
-        self.backend.disable_raw_mode();
+        if self.is_in_raw_mode {
+            self.backend.disable_raw_mode();
+            self.is_in_raw_mode = false;
+        }
+    }
+}
+
+impl Drop for Terminal {
+    fn drop(&mut self) {
+        self.disable_raw_mode();
     }
 }
