@@ -13,6 +13,6 @@ pub trait TerminalBackend: Send {
     fn move_cursor(&mut self, x: usize, y: usize);
     fn print(&mut self, text: &str, style: Style);
 
-    // TODO: fn size(&self) -> (usize, usize)
+    fn get_size(&self) -> (usize, usize);
     // TODO: input?
 }

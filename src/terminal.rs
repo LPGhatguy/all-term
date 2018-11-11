@@ -109,6 +109,10 @@ impl Terminal {
     pub fn print(&mut self, text: &str, style: Style) {
         self.backend.print(text, style);
     }
+
+    pub fn get_size(&self) -> (usize, usize) {
+        self.backend.get_size()
+    }
 }
 
 impl Drop for Terminal {

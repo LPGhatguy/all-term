@@ -1,7 +1,7 @@
 use crate::{
     style::Style,
     terminal_backend::TerminalBackend,
-    os::windows::{enable_raw_mode, disable_raw_mode},
+    os::windows::{enable_raw_mode, disable_raw_mode, get_terminal_size},
 };
 
 pub struct WindowsTerminal;
@@ -41,5 +41,9 @@ impl TerminalBackend for WindowsTerminal {
 
     fn print(&mut self, _text: &str, _style: Style) {
         unimplemented!()
+    }
+
+    fn get_size(&self) -> (usize, usize) {
+        get_terminal_size()
     }
 }

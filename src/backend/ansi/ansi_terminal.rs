@@ -3,7 +3,7 @@ use std::io::{self, Write};
 use crate::{
     style::Style,
     terminal_backend::TerminalBackend,
-    os::current::{enable_raw_mode, disable_raw_mode},
+    os::current::{enable_raw_mode, disable_raw_mode, get_terminal_size},
 };
 
 pub struct AnsiTerminal;
@@ -107,5 +107,9 @@ impl TerminalBackend for AnsiTerminal {
         handle.write(&[ESC, b'[', b'0', b'm']).unwrap();
 
         handle.flush().unwrap();
+    }
+
+    fn get_size(&self) -> (usize, usize) {
+        get_terminal_size()
     }
 }

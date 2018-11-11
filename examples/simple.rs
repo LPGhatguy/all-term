@@ -12,13 +12,16 @@ fn main() {
     handle.hide_cursor();
 
     for i in 0..20 {
+        let (width, height) = handle.get_size();
+        let text = format!("({}, {})", width, height);
+
         handle.move_cursor(i, i);
-        handle.print("ahhh", Style::new().fg(Color::Red).bg(Color::Blue));
+        handle.print(&text, Style::new().fg(Color::Red).bg(Color::Blue));
 
         handle.move_cursor(i + 2, i + 3);
-        handle.print("ahhh", Style::new().fg(Color::Black).bg(Color::White));
+        handle.print(&text, Style::new().fg(Color::Black).bg(Color::White));
 
-        thread::sleep(Duration::from_millis(40));
+        thread::sleep(Duration::from_millis(200));
         handle.clear_screen();
     }
 }
