@@ -1,6 +1,6 @@
 use winapi::{
     um::{
-        wincon::{ENABLE_LINE_INPUT, ENABLE_ECHO_INPUT},
+        wincon::{ENABLE_LINE_INPUT, ENABLE_ECHO_INPUT, ENABLE_PROCESSED_INPUT},
         consoleapi::{GetConsoleMode, SetConsoleMode},
     },
     shared::minwindef::DWORD,
@@ -8,7 +8,7 @@ use winapi::{
 
 use super::{get_stdin_handle, check_win32_error};
 
-const RAW_FLAGS: DWORD = !(ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT);
+const RAW_FLAGS: DWORD = !(ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT | ENABLE_PROCESSED_INPUT);
 
 pub fn enable_raw_mode() -> Result<(), String> {
     unsafe {
