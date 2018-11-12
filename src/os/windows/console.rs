@@ -46,40 +46,41 @@ pub fn get_last_error() -> Option<String> {
     Some(message)
 }
 
-pub fn die_if_win32_error() {
-    if let Some(message) = get_last_error() {
-        panic!("Win32 error: {}", message);
+pub fn check_win32_error() -> Result<(), String> {
+    match get_last_error() {
+        Some(error) => Err(error),
+        None => Ok(())
     }
 }
 
-pub fn get_stdout_handle() -> HANDLE {
+pub fn get_stdout_handle() -> Result<HANDLE, String> {
     let handle = unsafe {
         GetStdHandle(STD_OUTPUT_HANDLE)
     };
 
     if handle == INVALID_HANDLE_VALUE {
-        die_if_win32_error();
+        check_win32_error()?;
     }
 
     if handle == NULL {
-        panic!("No stdout available!");
+        return Err("No stdout available".to_string());
     }
 
-    handle
+    Ok(handle)
 }
 
-pub fn get_stdin_handle() -> HANDLE {
+pub fn get_stdin_handle() -> Result<HANDLE, String> {
     let handle = unsafe {
         GetStdHandle(STD_INPUT_HANDLE)
     };
 
     if handle == INVALID_HANDLE_VALUE {
-        die_if_win32_error();
+        check_win32_error()?;
     }
 
     if handle == NULL {
-        panic!("No stdout available!");
+        return Err("No stdin available".to_string());
     }
 
-    handle
+    Ok(handle)
 }

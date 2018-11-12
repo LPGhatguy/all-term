@@ -14,7 +14,7 @@ fn choose_backend() -> Box<TerminalBackend> {
     use crate::backend::windows::WindowsTerminal;
     use crate::os::windows::enable_ansi_mode;
 
-    if enable_ansi_mode() {
+    if enable_ansi_mode().is_ok() {
         Box::new(AnsiTerminal::new())
     } else {
         Box::new(WindowsTerminal)

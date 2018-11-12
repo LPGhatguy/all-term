@@ -9,11 +9,13 @@ pub struct WindowsTerminal;
 
 impl TerminalBackend for WindowsTerminal {
     fn enable_raw_mode(&mut self) {
-        enable_raw_mode();
+        enable_raw_mode()
+            .expect("Could not enable raw mode");
     }
 
     fn disable_raw_mode(&mut self) {
-        disable_raw_mode();
+        disable_raw_mode()
+            .expect("Could not disable raw mode")
     }
 
     fn enable_alternate_screen(&mut self) {
@@ -46,6 +48,7 @@ impl TerminalBackend for WindowsTerminal {
 
     fn get_size(&self) -> (usize, usize) {
         get_terminal_size()
+            .expect("Could not get terminal size")
     }
 
     fn read_key(&mut self) -> Key {

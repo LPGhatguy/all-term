@@ -6,7 +6,7 @@ use winapi::{
     shared::minwindef::DWORD,
 };
 
-use crate::os::windows::{get_stdout_handle, get_stdin_handle, die_if_win32_error};
+use crate::os::windows::{get_stdout_handle, get_stdin_handle, check_win32_error};
 
 const ANSI_INPUT_FLAGS: DWORD = ENABLE_VIRTUAL_TERMINAL_INPUT;
 const ANSI_OUTPUT_FLAGS: DWORD = ENABLE_VIRTUAL_TERMINAL_PROCESSING;
@@ -19,40 +19,38 @@ const ANSI_OUTPUT_FLAGS: DWORD = ENABLE_VIRTUAL_TERMINAL_PROCESSING;
 /// https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
 ///
 /// Return value indicates success.
-pub fn enable_ansi_mode() -> bool {
+pub fn enable_ansi_mode() -> Result<(), String> {
     unsafe {
         {
-            let stdout_handle = get_stdout_handle();
+            let stdout_handle = get_stdout_handle()?;
 
             let mut console_mode = 0;
             if GetConsoleMode(stdout_handle, &mut console_mode) == 0 {
-                die_if_win32_error();
+                check_win32_error()?;
             }
 
             let new_mode = console_mode | ANSI_OUTPUT_FLAGS;
 
             if SetConsoleMode(stdout_handle, new_mode) == 0 {
-                println!("Failed to enable ANSI mode");
-                return false;
+                check_win32_error()?;
             }
         }
 
         {
-            let stdin_handle = get_stdin_handle();
+            let stdin_handle = get_stdin_handle()?;
 
             let mut console_mode = 0;
             if GetConsoleMode(stdin_handle, &mut console_mode) == 0 {
-                die_if_win32_error();
+                check_win32_error()?;
             }
 
             let new_mode = console_mode | ANSI_INPUT_FLAGS;
 
             if SetConsoleMode(stdin_handle, new_mode) == 0 {
-                println!("Failed to enable ANSI mode");
-                return false;
+                check_win32_error()?;
             }
         }
     }
 
-    true
+    Ok(())
 }
