@@ -4,19 +4,18 @@ use lazy_static::lazy_static;
 
 use crate::{
     style::Style,
+    key::Key,
     backend::ansi::AnsiTerminal,
     terminal_backend::TerminalBackend,
 };
 
 #[cfg(windows)]
 fn choose_backend() -> Box<TerminalBackend> {
-    use crate::backend::windows::{
-        enable_ansi_mode,
-        WindowsTerminal,
-    };
+    use crate::backend::windows::WindowsTerminal;
+    use crate::os::windows::enable_ansi_mode;
 
     if enable_ansi_mode() {
-        Box::new(AnsiTerminal)
+        Box::new(AnsiTerminal::new())
     } else {
         Box::new(WindowsTerminal)
     }
@@ -24,7 +23,7 @@ fn choose_backend() -> Box<TerminalBackend> {
 
 #[cfg(not(windows))]
 fn choose_backend() -> Box<TerminalBackend> {
-    Box::new(AnsiTerminal)
+    Box::new(AnsiTerminal::new())
 }
 
 /// Provides access to the application's terminal.
@@ -112,6 +111,10 @@ impl Terminal {
 
     pub fn get_size(&self) -> (usize, usize) {
         self.backend.get_size()
+    }
+
+    pub fn read_key(&mut self) -> Key {
+        self.backend.read_key()
     }
 }
 

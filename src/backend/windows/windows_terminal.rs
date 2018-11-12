@@ -1,5 +1,6 @@
 use crate::{
     style::Style,
+    key::Key,
     terminal_backend::TerminalBackend,
     os::windows::{enable_raw_mode, disable_raw_mode, get_terminal_size},
 };
@@ -45,5 +46,9 @@ impl TerminalBackend for WindowsTerminal {
 
     fn get_size(&self) -> (usize, usize) {
         get_terminal_size()
+    }
+
+    fn read_key(&mut self) -> Key {
+        unimplemented!()
     }
 }

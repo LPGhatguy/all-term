@@ -1,21 +1,16 @@
 use winapi::um::{
-    winbase::STD_OUTPUT_HANDLE,
     wincon::{GetConsoleScreenBufferInfo, CONSOLE_SCREEN_BUFFER_INFO},
-    processenv::GetStdHandle,
-    errhandlingapi::GetLastError,
 };
+
+use super::{get_stdout_handle, die_if_win32_error};
 
 pub fn get_terminal_size() -> (usize, usize) {
     unsafe {
-        let std_out_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-        let error_code = GetLastError();
-        if error_code != 0 {
-            panic!("Could not GetStdHandle");
-        }
+        let std_out_handle = get_stdout_handle();
 
         let mut info = CONSOLE_SCREEN_BUFFER_INFO::default();
         if GetConsoleScreenBufferInfo(std_out_handle, &mut info) == 0 {
-            panic!("Could not GetConsoleScreenBufferInfo");
+            die_if_win32_error();
         }
 
         let width = info.srWindow.Right - info.srWindow.Left + 1;

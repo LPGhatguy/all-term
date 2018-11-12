@@ -1,12 +1,32 @@
-use std::io::{self, Write};
-
-use crate::{
-    style::Style,
-    terminal_backend::TerminalBackend,
-    os::current::{enable_raw_mode, disable_raw_mode, get_terminal_size},
+use std::{
+    io::{self, Write},
+    sync::mpsc,
 };
 
-pub struct AnsiTerminal;
+use crate::{
+    os::current::{enable_raw_mode, disable_raw_mode, get_terminal_size},
+    key::Key,
+    style::Style,
+    terminal_backend::TerminalBackend,
+};
+
+use super::input::{start_input_thread, read_key};
+
+pub struct AnsiTerminal {
+    input_receiver: mpsc::Receiver<u8>,
+}
+
+impl AnsiTerminal {
+    pub fn new() -> AnsiTerminal {
+        let (input_sender, input_receiver) = mpsc::channel();
+
+        start_input_thread(input_sender);
+
+        AnsiTerminal {
+            input_receiver,
+        }
+    }
+}
 
 const ESC: u8 = 27;
 
@@ -111,5 +131,9 @@ impl TerminalBackend for AnsiTerminal {
 
     fn get_size(&self) -> (usize, usize) {
         get_terminal_size()
+    }
+
+    fn read_key(&mut self) -> Key {
+        read_key(&self.input_receiver)
     }
 }

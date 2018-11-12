@@ -1,5 +1,6 @@
 use crate::{
     style::Style,
+    key::Key,
 };
 
 pub trait TerminalBackend: Send {
@@ -12,7 +13,6 @@ pub trait TerminalBackend: Send {
     fn show_cursor(&mut self);
     fn move_cursor(&mut self, x: usize, y: usize);
     fn print(&mut self, text: &str, style: Style);
-
     fn get_size(&self) -> (usize, usize);
-    // TODO: input?
+    fn read_key(&mut self) -> Key;
 }

@@ -11,6 +11,7 @@ mod style;
 mod terminal;
 mod terminal_backend;
 mod os;
+mod key;
 
 pub use terminal::{
     terminal,
@@ -21,3 +22,5 @@ pub use style::{
     Color,
     Style,
 };
+
+pub use key::Key;

@@ -1,57 +1,45 @@
-use winapi::um::{
-    winbase::STD_OUTPUT_HANDLE,
-    wincon::{ENABLE_WRAP_AT_EOL_OUTPUT, ENABLE_LINE_INPUT},
-    processenv::GetStdHandle,
-    errhandlingapi::GetLastError,
-    consoleapi::{GetConsoleMode, SetConsoleMode},
+use winapi::{
+    um::{
+        wincon::{ENABLE_LINE_INPUT, ENABLE_ECHO_INPUT},
+        consoleapi::{GetConsoleMode, SetConsoleMode},
+    },
+    shared::minwindef::DWORD,
 };
+
+use super::{get_stdin_handle, die_if_win32_error};
+
+const RAW_FLAGS: DWORD = !(ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT);
 
 pub fn enable_raw_mode() {
     unsafe {
-        let std_out_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-        let error_code = GetLastError();
-        if error_code != 0 {
-            panic!("Could not GetStdHandle");
-        }
+        let stdin_handle = get_stdin_handle();
 
         let mut console_mode: u32 = 0;
-        GetConsoleMode(std_out_handle, &mut console_mode);
-        let error_code = GetLastError();
-        if error_code != 0 {
-            panic!("Could not GetConsoleMode");
+        if GetConsoleMode(stdin_handle, &mut console_mode) == 0 {
+            die_if_win32_error();
         }
 
-        let new_mode = console_mode & !(ENABLE_WRAP_AT_EOL_OUTPUT | ENABLE_LINE_INPUT);
+        let new_mode = console_mode & RAW_FLAGS;
 
-        SetConsoleMode(std_out_handle, new_mode);
-        let error_code = GetLastError();
-        if error_code != 0 {
-            panic!("Could not SetConsoleMode");
+        if SetConsoleMode(stdin_handle, new_mode) == 0 {
+            die_if_win32_error();
         }
     }
 }
 
 pub fn disable_raw_mode() {
     unsafe {
-        let std_out_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-        let error_code = GetLastError();
-        if error_code != 0 {
-            panic!("Could not GetStdHandle");
-        }
+        let stdin_handle = get_stdin_handle();
 
         let mut console_mode: u32 = 0;
-        GetConsoleMode(std_out_handle, &mut console_mode);
-        let error_code = GetLastError();
-        if error_code != 0 {
-            panic!("Could not GetConsoleMode");
+        if GetConsoleMode(stdin_handle, &mut console_mode) == 0 {
+            die_if_win32_error();
         }
 
-        let new_mode = console_mode | (ENABLE_WRAP_AT_EOL_OUTPUT | ENABLE_LINE_INPUT);
+        let new_mode = console_mode | !RAW_FLAGS;
 
-        SetConsoleMode(std_out_handle, new_mode);
-        let error_code = GetLastError();
-        if error_code != 0 {
-            panic!("Could not SetConsoleMode");
+        if SetConsoleMode(stdin_handle, new_mode) == 0 {
+            die_if_win32_error();
         }
     }
 }
