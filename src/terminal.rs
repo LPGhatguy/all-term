@@ -63,14 +63,16 @@ impl Terminal {
 
     pub fn enable_raw_mode(&mut self) {
         if !self.raw_mode_enabled {
-            self.backend.enable_raw_mode();
+            self.backend.enable_raw_mode()
+                .expect("Could not enable raw mode");
             self.raw_mode_enabled = true;
         }
     }
 
     pub fn disable_raw_mode(&mut self) {
         if self.raw_mode_enabled {
-            self.backend.disable_raw_mode();
+            self.backend.disable_raw_mode()
+                .expect("Could not disable raw mode");
             self.raw_mode_enabled = false;
         }
     }
@@ -111,6 +113,7 @@ impl Terminal {
 
     pub fn get_size(&self) -> (usize, usize) {
         self.backend.get_size()
+            .expect("Could not get terminal size")
     }
 
     pub fn read_key(&mut self) -> Key {
@@ -120,7 +123,13 @@ impl Terminal {
 
 impl Drop for Terminal {
     fn drop(&mut self) {
-        self.disable_raw_mode();
+        if self.raw_mode_enabled {
+            match self.backend.disable_raw_mode() {
+                Err(e) => eprintln!("Could not disable raw mode at Drop: {}", e),
+                Ok(_) => {},
+            }
+        }
+
         self.disable_alternate_screen();
     }
 }
