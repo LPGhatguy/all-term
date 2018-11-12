@@ -1,7 +1,7 @@
 use winapi::{
     um::{
         consoleapi::{GetConsoleMode, SetConsoleMode},
-        wincon::{ENABLE_VIRTUAL_TERMINAL_PROCESSING, ENABLE_VIRTUAL_TERMINAL_INPUT, DISABLE_NEWLINE_AUTO_RETURN},
+        wincon::{ENABLE_VIRTUAL_TERMINAL_PROCESSING, ENABLE_VIRTUAL_TERMINAL_INPUT},
     },
     shared::minwindef::DWORD,
 };

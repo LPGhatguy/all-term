@@ -6,6 +6,8 @@ pub enum Key {
     Down,
     Left,
     Right,
+    Home,
+    End,
     F(u8),
     Char(char),
 }

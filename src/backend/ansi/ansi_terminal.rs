@@ -1,6 +1,7 @@
 use std::{
     io::{self, Write},
     sync::mpsc,
+    collections::VecDeque,
 };
 
 use crate::{
@@ -14,6 +15,7 @@ use super::input::{start_input_thread, read_key};
 
 pub struct AnsiTerminal {
     input_receiver: mpsc::Receiver<u8>,
+    input_buffer: VecDeque<Key>,
 }
 
 impl AnsiTerminal {
@@ -24,6 +26,7 @@ impl AnsiTerminal {
 
         AnsiTerminal {
             input_receiver,
+            input_buffer: VecDeque::new(),
         }
     }
 }
@@ -134,6 +137,12 @@ impl TerminalBackend for AnsiTerminal {
     }
 
     fn read_key(&mut self) -> Key {
-        read_key(&self.input_receiver)
+        match self.input_buffer.pop_front() {
+            Some(key) => key,
+            None => {
+                read_key(&self.input_receiver, &mut self.input_buffer);
+                self.read_key()
+            },
+        }
     }
 }
