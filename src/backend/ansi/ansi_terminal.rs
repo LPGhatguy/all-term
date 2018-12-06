@@ -98,7 +98,7 @@ impl TerminalBackend for AnsiTerminal {
         let mut handle = stdout.lock();
 
         handle.write(&[ESC]).unwrap();
-        write!(&mut handle, "[{};{}H", x, y).unwrap();
+        write!(&mut handle, "[{};{}H", y, x).unwrap();
         handle.flush().unwrap();
     }
 
