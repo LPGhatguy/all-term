@@ -29,10 +29,10 @@ lazy_static! {
     static ref RAW_MODE: Mutex<RawMode> = Mutex::new(RawMode::new());
 }
 
-pub fn enable_raw_mode() {
+pub fn enable_raw_mode() -> Result<(), String> {
     let mut raw_mode = RAW_MODE.lock().unwrap();
 
-    let original_termios = termios {
+    let mut original_termios = termios {
         c_iflag: 0,
         c_oflag: 0,
         c_cflag: 0,
@@ -44,18 +44,22 @@ pub fn enable_raw_mode() {
     };
 
     unsafe {
-        tcgetattr(STDIN_FILENO, &original_termios);
+        tcgetattr(STDIN_FILENO, &mut original_termios);
     }
 
-    let with_raw = original_termios;
+    raw_mode.original_termios = Some(original_termios);
+
+    let mut with_raw = original_termios;
     with_raw.c_lflag &= !ECHO;
 
     unsafe {
         tcsetattr(STDIN_FILENO, TCSAFLUSH, &with_raw);
     }
+
+    Ok(())
 }
 
-pub fn disable_raw_mode() {
+pub fn disable_raw_mode() -> Result<(), String> {
     let mut raw_mode = RAW_MODE.lock().unwrap();
 
     if let Some(termios) = raw_mode.original_termios {
@@ -65,4 +69,6 @@ pub fn disable_raw_mode() {
     }
 
     raw_mode.original_termios = None;
+
+    Ok(())
 }
