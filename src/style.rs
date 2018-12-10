@@ -8,6 +8,10 @@ pub enum Color {
     Magenta,
     Cyan,
     White,
+    Reset,
+
+    #[doc(hidden)]
+    __Nonexhaustive,
 }
 
 // https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences#text-formatting
@@ -22,6 +26,8 @@ impl Color {
             Color::Magenta => 35,
             Color::Cyan => 36,
             Color::White => 37,
+            Color::Reset => 39,
+            Color::__Nonexhaustive => unreachable!(),
         }
     }
 
@@ -35,6 +41,8 @@ impl Color {
             Color::Magenta => 45,
             Color::Cyan => 46,
             Color::White => 47,
+            Color::Reset => 49,
+            Color::__Nonexhaustive => unreachable!(),
         }
     }
 }
