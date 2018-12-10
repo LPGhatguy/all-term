@@ -13,9 +13,13 @@ pub fn get_terminal_size() -> Result<(usize, usize), String> {
         ws_ypixel: 0,
     };
 
-    unsafe {
-        ioctl(STDIN_FILENO, TIOCGWINSZ, &mut size);
-    }
+    let result = unsafe {
+        ioctl(STDIN_FILENO, TIOCGWINSZ, &mut size)
+    };
 
-    Ok((size.ws_row as usize, size.ws_col as usize))
+    if result == 0 {
+        Ok((size.ws_row as usize, size.ws_col as usize))
+    } else {
+        Err(format!("ioctl error {}", result))
+    }
 }
