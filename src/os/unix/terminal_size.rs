@@ -18,7 +18,7 @@ pub fn get_terminal_size() -> Result<(usize, usize), String> {
     };
 
     if result == 0 {
-        Ok((size.ws_row as usize, size.ws_col as usize))
+        Ok((size.ws_col as usize, size.ws_row as usize))
     } else {
         Err(format!("ioctl error {}", result))
     }
