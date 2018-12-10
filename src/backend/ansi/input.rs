@@ -77,6 +77,10 @@ pub fn read_key(receiver: &mpsc::Receiver<u8>, output: &mut VecDeque<Key>) {
             // 0x7f is for Windows, this might not be correct elsewhere?
             output.push_back(Key::Backspace);
         },
+        b'\r' => {
+            // Windows sends return as \r instead of \n, which is weird
+            output.push_back(Key::Char('\n'));
+        },
         _ => {
             output.push_back(Key::Char(byte.into()));
         },

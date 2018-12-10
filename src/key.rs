@@ -10,4 +10,7 @@ pub enum Key {
     End,
     F(u8),
     Char(char),
+
+    #[doc(hidden)]
+    __Nonexhaustive,
 }
