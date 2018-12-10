@@ -50,14 +50,18 @@ pub struct Terminal {
     backend: Box<TerminalBackend>,
     raw_mode_enabled: bool,
     alternate_screen_enabled: bool,
+    cursor_hidden: bool,
 }
 
 impl Terminal {
-    fn with_backend(backend: Box<TerminalBackend>) -> Terminal {
+    fn with_backend(mut backend: Box<TerminalBackend>) -> Terminal {
+        backend.show_cursor();
+
         Terminal {
             backend,
             raw_mode_enabled: false,
             alternate_screen_enabled: false,
+            cursor_hidden: false,
         }
     }
 
@@ -96,10 +100,12 @@ impl Terminal {
     }
 
     pub fn show_cursor(&mut self) {
+        self.cursor_hidden = false;
         self.backend.show_cursor();
     }
 
     pub fn hide_cursor(&mut self) {
+        self.cursor_hidden = true;
         self.backend.hide_cursor();
     }
 
@@ -123,6 +129,8 @@ impl Terminal {
 
 impl Drop for Terminal {
     fn drop(&mut self) {
+        self.show_cursor();
+
         if self.raw_mode_enabled {
             match self.backend.disable_raw_mode() {
                 Err(e) => eprintln!("Could not disable raw mode at Drop: {}", e),
