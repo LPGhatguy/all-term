@@ -1,8 +1,6 @@
 extern crate all_term;
 
-use all_term::{Style, Color, Key};
-
-use std::{thread, time::Duration};
+use all_term::{Key, Style};
 
 fn main() {
     let terminal = all_term::terminal();
@@ -10,14 +8,18 @@ fn main() {
 
     handle.enable_raw_mode();
     handle.enable_alternate_screen();
+    handle.hide_cursor();
 
     loop {
         let key = handle.read_key();
-        handle.clear_screen();
 
         match key {
             Key::Char('q') => break,
-            _ => println!("Got key! {:?}", key),
+            _ => {
+                handle.clear_screen();
+                handle.move_cursor(0, 0);
+                handle.print(format!("Got key {:?}", key), Style::new());
+            },
         }
     }
 }

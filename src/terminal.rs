@@ -113,8 +113,8 @@ impl Terminal {
         self.backend.move_cursor(x, y);
     }
 
-    pub fn print(&mut self, text: &str, style: Style) {
-        self.backend.print(text, style);
+    pub fn print<S: AsRef<str>>(&mut self, text: S, style: Style) {
+        self.backend.print(text.as_ref(), style);
     }
 
     pub fn get_size(&self) -> (usize, usize) {

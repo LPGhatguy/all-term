@@ -11,6 +11,7 @@ use libc::{
     STDIN_FILENO,
     TCSAFLUSH,
     ECHO,
+    ICANON,
 };
 
 struct RawMode {
@@ -50,7 +51,7 @@ pub fn enable_raw_mode() -> Result<(), String> {
     raw_mode.original_termios = Some(original_termios);
 
     let mut with_raw = original_termios;
-    with_raw.c_lflag &= !ECHO;
+    with_raw.c_lflag &= !(ECHO | ICANON);
 
     unsafe {
         tcsetattr(STDIN_FILENO, TCSAFLUSH, &with_raw);
